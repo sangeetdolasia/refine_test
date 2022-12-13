@@ -1,7 +1,7 @@
 import React from "react";
 import { useTable, ColumnDef, flexRender } from "@pankod/refine-react-table";
 import { ICategory, IPost } from "../../interfaces";
-import { useMany, GetManyResponse } from "@pankod/refine-core";
+import { useList } from "@pankod/refine-core";
 
 const List = () => {
   const columns = React.useMemo<ColumnDef<IPost>[]>(
@@ -12,36 +12,19 @@ const List = () => {
         accessorKey: "id",
       },
       {
-        id: "title",
-        header: "Title",
-        accessorKey: "title",
+        id: "clint_name",
+        header: "clint Name",
+        accessorKey: "clint_name",
+      },
+      {
+        id: "clint_type",
+        header: "clint Type",
+        accessorKey: "clint_type",
       },
       {
         id: "status",
         header: "Status",
         accessorKey: "status",
-      },
-      {
-        id: "createdAt",
-        header: "CreatedAt",
-        accessorKey: "createdAt",
-      },
-      {
-        id: "category.id",
-        header: "Category",
-        accessorKey: "category.id",
-        cell: function render({ getValue, table }) {
-          console.log(table, "table");
-          console.log(getValue(), "getValue");
-
-          const meta = table.options.meta as {
-            categoriesData: GetManyResponse<ICategory>;
-          };
-          const category = meta.categoriesData?.data.find(
-            (item) => item.id === getValue()
-          );
-          return category?.title ?? "Loading...";
-        },
       },
     ],
     []
@@ -50,32 +33,18 @@ const List = () => {
   const {
     getHeaderGroups,
     getRowModel,
-    setOptions,
-    refineCore: {
-      tableQueryResult: { data: tableData },
-    },
-  } = useTable<IPost>({
+    getState,
+    setPageIndex,
+    getCanPreviousPage,
+    getPageCount,
+    getCanNextPage,
+    nextPage,
+    previousPage,
+    setPageCount,
+  } = useTable<any>({
     columns,
   });
-
-  const categoryIds = tableData?.data?.map((item) => item.category.id) ?? [];
-
-  const { data: categoriesData } = useMany<ICategory>({
-    resource: "categories",
-    ids: categoryIds,
-    queryOptions: {
-      enabled: categoryIds.length > 0,
-    },
-  });
-  console.log(categoriesData, "categoriesData");
-
-  setOptions((prev) => ({
-    ...prev,
-    meta: {
-      ...prev.meta,
-      categoriesData,
-    },
-  }));
+  // console.log(setPagination());
 
   return (
     <div className="container mx-auto pb-4">
@@ -120,6 +89,56 @@ const List = () => {
           })}
         </tbody>
       </table>
+      <div className="mt-2 flex items-center justify-end gap-4">
+        <div className="flex gap-1">
+          <button
+            onClick={() => {
+              console.log("nbnnbnbnbnb");
+              setPageIndex(0);
+            }}
+            // disabled={!getCanPreviousPage()}
+            className="flex items-center justify-between gap-1 rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white disabled:bg-gray-200 hover:disabled:text-black"
+          >
+            {"<<"}sss
+          </button>
+          <button
+            onClick={() => {
+              console.log("hiiii");
+
+              previousPage();
+              console.log(setPageCount(getPageCount()), "sddsdsds");
+            }}
+            // disabled={!getCanPreviousPage()}
+            className="flex items-center justify-between gap-1 rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white disabled:bg-gray-200 hover:disabled:text-black"
+          >
+            {"<"}
+          </button>
+          <button
+            onClick={() => nextPage()}
+            // disabled={!getCanNextPage()}
+            className="flex items-center justify-between gap-1 rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white disabled:bg-gray-200 hover:disabled:text-black"
+          >
+            {">"}
+          </button>
+          <button
+            onClick={() => {
+              console.log(getPageCount(), "sdfddsf");
+
+              setPageIndex(getPageCount() - 1);
+            }}
+            // disabled={!getCanNextPage()}
+            className="flex items-center justify-between gap-1 rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white disabled:bg-gray-200 hover:disabled:text-black"
+          >
+            {">>"}
+          </button>
+        </div>
+        <span>
+          Page
+          <strong>
+            {getState().pagination.pageIndex + 1} of {getPageCount()}
+          </strong>
+        </span>
+      </div>
     </div>
   );
 };

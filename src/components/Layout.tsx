@@ -6,7 +6,6 @@ const { Link } = routerProvider;
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { menuItems } = useMenu();
   const { push } = useNavigation();
-  console.log(menuItems, "menuItems");
 
   return (
     <div className="flex min-h-screen flex-col">

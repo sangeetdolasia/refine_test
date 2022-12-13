@@ -1,9 +1,8 @@
 export interface IPost {
   id: number;
-  title: string;
-  status: "published" | "draft" | "rejected";
-  createdAt: string;
-  category: { id: number };
+  clint_name: string;
+  clint_type: string;
+  status: string;
 }
 
 export interface ICategory {
