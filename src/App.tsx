@@ -8,6 +8,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { authProvider } from "./authProvider";
 import MockAPI from "./helpers/mock-api";
 import { dataProvider } from "./dataProvider";
+import { PostEdit } from "./pages";
 
 const axiosInstance = axios.create();
 
@@ -33,7 +34,7 @@ const App: React.FC = () => {
       }}
       dataProvider={dataProvider(axiosInstance)}
       authProvider={authProvider(axiosInstance)}
-      resources={[{ name: "lists", list: List }]}
+      resources={[{ name: "lists", list: List, edit: PostEdit }]}
       Layout={Layout}
     />
   );

@@ -1,9 +1,11 @@
 import React from "react";
 import { useTable, ColumnDef, flexRender } from "@pankod/refine-react-table";
 import { ICategory, IPost } from "../../interfaces";
-import { useList } from "@pankod/refine-core";
+import { useList, useNavigation } from "@pankod/refine-core";
 
 const List = () => {
+  const { edit } = useNavigation();
+
   const columns = React.useMemo<ColumnDef<IPost>[]>(
     () => [
       {
@@ -15,6 +17,9 @@ const List = () => {
         id: "clint_name",
         header: "clint Name",
         accessorKey: "clint_name",
+        meta: {
+          filterOperator: "contains",
+        },
       },
       {
         id: "clint_type",
@@ -25,6 +30,21 @@ const List = () => {
         id: "status",
         header: "Status",
         accessorKey: "status",
+      },
+      {
+        id: "action",
+        header: "Action",
+        accessorKey: "id",
+        cell: function render({ getValue }) {
+          return (
+            <button
+              className="rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white"
+              onClick={() => edit("lists", getValue() as number)}
+            >
+              edit
+            </button>
+          );
+        },
       },
     ],
     []
@@ -40,14 +60,29 @@ const List = () => {
     getCanNextPage,
     nextPage,
     previousPage,
-    setPageCount,
+    getColumn,
   } = useTable<any>({
     columns,
   });
-  // console.log(setPagination());
+  const titleColumn = getColumn("clint_name");
 
   return (
     <div className="container mx-auto pb-4">
+      <div className="mb-3 mt-1 flex items-center justify-between">
+        <div>
+          <label className="mr-1" htmlFor="title">
+            Title:
+          </label>
+          <input
+            id="title"
+            type="text"
+            className="rounded border border-gray-200 p-1 text-gray-700"
+            placeholder="Filter by title"
+            value={(titleColumn.getFilterValue() as string) ?? ""}
+            onChange={(event) => titleColumn.setFilterValue(event.target.value)}
+          />
+        </div>
+      </div>
       <table className="min-w-full table-fixed divide-y divide-gray-200 border">
         <thead className="bg-gray-100">
           {getHeaderGroups().map((headerGroup) => (
@@ -58,10 +93,19 @@ const List = () => {
                   colSpan={header.colSpan}
                   className="py-3 px-6 text-left text-xs font-medium uppercase tracking-wider text-gray-700 "
                 >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
+                  <div onClick={header.column.getToggleSortingHandler()}>
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {(header.column.columnDef.id !== "clint_type" &&
+                      header.column.columnDef.id !== "status" &&
+                      {
+                        asc: " 🔼",
+                        desc: " 🔽",
+                      }[header.column.getIsSorted() as string]) ??
+                      null}
+                  </div>
                 </th>
               ))}
             </tr>
@@ -92,41 +136,29 @@ const List = () => {
       <div className="mt-2 flex items-center justify-end gap-4">
         <div className="flex gap-1">
           <button
-            onClick={() => {
-              console.log("nbnnbnbnbnb");
-              setPageIndex(0);
-            }}
-            // disabled={!getCanPreviousPage()}
+            onClick={() => setPageIndex(0)}
+            disabled={!getCanPreviousPage()}
             className="flex items-center justify-between gap-1 rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white disabled:bg-gray-200 hover:disabled:text-black"
           >
-            {"<<"}sss
+            {"<<"}
           </button>
           <button
-            onClick={() => {
-              console.log("hiiii");
-
-              previousPage();
-              console.log(setPageCount(getPageCount()), "sddsdsds");
-            }}
-            // disabled={!getCanPreviousPage()}
+            onClick={() => previousPage()}
+            disabled={!getCanPreviousPage()}
             className="flex items-center justify-between gap-1 rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white disabled:bg-gray-200 hover:disabled:text-black"
           >
             {"<"}
           </button>
           <button
             onClick={() => nextPage()}
-            // disabled={!getCanNextPage()}
+            disabled={!getCanNextPage()}
             className="flex items-center justify-between gap-1 rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white disabled:bg-gray-200 hover:disabled:text-black"
           >
             {">"}
           </button>
           <button
-            onClick={() => {
-              console.log(getPageCount(), "sdfddsf");
-
-              setPageIndex(getPageCount() - 1);
-            }}
-            // disabled={!getCanNextPage()}
+            onClick={() => setPageIndex(getPageCount() - 1)}
+            disabled={!getCanNextPage()}
             className="flex items-center justify-between gap-1 rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white disabled:bg-gray-200 hover:disabled:text-black"
           >
             {">>"}
