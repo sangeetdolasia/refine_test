@@ -1,9 +1,113 @@
-import React from 'react'
+import { useNavigation } from "@pankod/refine-core";
+import { useForm } from "@pankod/refine-react-hook-form";
+import { useNavigate } from "@pankod/refine-react-router-v6";
+import { useEffect } from "react";
 
-const Create = () => {
+export const PostCreate: React.FC = () => {
+  const {
+    refineCore: { onFinish, formLoading },
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const navigate = useNavigate();
+  const { push } = useNavigation();
+
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    }
+  }, []);
   return (
-    <div>Create</div>
-  )
-}
-
-export default Create
+    <div className="container mx-auto">
+      <br />
+      <form onSubmit={handleSubmit(onFinish)}>
+        <div className="flex mb-10 mt-10">
+          <div className="mb-6 flex-1 w-48">
+            <label htmlFor="status" className="mb-2 block text-sm font-medium">
+              Status
+            </label>
+            <select
+              {...register("status")}
+              className="rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm"
+            >
+              <option value="true">Active</option>
+              <option value="false">In-Active</option>
+            </select>
+          </div>
+          <div className="mb-6 flex-1 w-48">
+            <label
+              htmlFor="Client Type"
+              className="mb-2 block text-sm font-medium"
+            >
+              Type
+            </label>
+            <select
+              {...register("client_type", { required: true })}
+              className="rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm"
+            >
+              <option value={""} disabled>
+                Please select
+              </option>
+              <option value="International">International</option>
+              <option value="Local">Local</option>
+            </select>
+            {errors.client_type && (
+              <p className="mt-1 text-sm text-red-600">
+                <span className="font-medium">This field is required</span>
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="mb-6">
+          <label
+            htmlFor="client_name"
+            className="mb-2 block text-sm font-medium"
+          >
+            Client Name
+          </label>
+          <input
+            {...register("client_name", {
+              required: true,
+              minLength: 3,
+              maxLength: 50,
+            })}
+            id="client_name"
+            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm "
+            placeholder="Client Name"
+          />
+          {errors.client_name?.type === "required" && (
+            <p className="mt-1 text-sm text-red-600">
+              <span className="font-medium">This field is required</span>
+            </p>
+          )}
+          {(errors.client_name?.type === "minLength" ||
+            errors.client_name?.type === "maxLength") && (
+            <p className="mt-1 text-sm text-red-600">
+              <span className="font-medium">
+                Insert minimum 3 and maximum 50 char
+              </span>
+            </p>
+          )}
+        </div>
+        <div className="flex flex-row-reverse space-x-4 space-x-reverse">
+          <button
+            type="submit"
+            className="flex w-full items-center rounded-lg bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-600 sm:w-auto"
+          >
+            {formLoading && "Create"}
+            <span>Save</span>
+          </button>
+          <button
+            type="button"
+            className="flex w-full items-center rounded-lg bg-gray-400 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-500 sm:w-auto"
+            onClick={() => push("/lists" || "")}
+          >
+            <span>Back</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};

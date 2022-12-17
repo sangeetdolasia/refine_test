@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTable, ColumnDef, flexRender } from "@pankod/refine-react-table";
-import { ICategory, IPost } from "../../interfaces";
-import { useList, useNavigation } from "@pankod/refine-core";
+import { IPost } from "../../interfaces";
+import { useDelete, useNavigation } from "@pankod/refine-core";
+import { useNavigate } from "@pankod/refine-react-router-v6";
 
-const List = () => {
-  const { edit } = useNavigation();
+export const PostList = () => {
+  const { edit, create } = useNavigation();
+  const navigate = useNavigate();
+  const { mutate } = useDelete();
+
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    }
+  }, []);
 
   const columns = React.useMemo<ColumnDef<IPost>[]>(
     () => [
@@ -14,22 +23,25 @@ const List = () => {
         accessorKey: "id",
       },
       {
-        id: "clint_name",
-        header: "clint Name",
-        accessorKey: "clint_name",
+        id: "client_name",
+        header: "client Name",
+        accessorKey: "client_name",
         meta: {
           filterOperator: "contains",
         },
       },
       {
-        id: "clint_type",
-        header: "clint Type",
-        accessorKey: "clint_type",
+        id: "client_type",
+        header: "client Type",
+        accessorKey: "client_type",
       },
       {
         id: "status",
         header: "Status",
         accessorKey: "status",
+        cell: function render({ renderValue }) {
+          return renderValue() ? "Active" : "In-Active";
+        },
       },
       {
         id: "action",
@@ -37,12 +49,25 @@ const List = () => {
         accessorKey: "id",
         cell: function render({ getValue }) {
           return (
-            <button
-              className="rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white"
-              onClick={() => edit("lists", getValue() as number)}
-            >
-              edit
-            </button>
+            <div className="flex gap-2">
+              <button
+                className="rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-indigo-500 hover:text-white"
+                onClick={() => edit("lists", getValue() as number)}
+              >
+                Edit
+              </button>
+              <button
+                className="rounded border border-gray-200 p-2 text-xs font-medium leading-tight transition duration-150 ease-in-out hover:bg-red-500 hover:text-white"
+                onClick={() =>
+                  mutate({
+                    id: getValue() as number,
+                    resource: "lists",
+                  })
+                }
+              >
+                Delete
+              </button>
+            </div>
           );
         },
       },
@@ -64,24 +89,30 @@ const List = () => {
   } = useTable<any>({
     columns,
   });
-  const titleColumn = getColumn("clint_name");
+  const titleColumn = getColumn("client_name");
 
   return (
     <div className="container mx-auto pb-4">
       <div className="mb-3 mt-1 flex items-center justify-between">
         <div>
           <label className="mr-1" htmlFor="title">
-            Title:
+            Client Name:
           </label>
           <input
             id="title"
             type="text"
             className="rounded border border-gray-200 p-1 text-gray-700"
-            placeholder="Filter by title"
+            placeholder="Filter by client name"
             value={(titleColumn.getFilterValue() as string) ?? ""}
             onChange={(event) => titleColumn.setFilterValue(event.target.value)}
           />
         </div>
+        <button
+          className="flex items-center justify-between gap-1 rounded border border-gray-200 bg-indigo-500 p-2 text-xs font-medium leading-tight text-white transition duration-150 ease-in-out hover:bg-indigo-600"
+          onClick={() => create("lists")}
+        >
+          <span>Create Post</span>
+        </button>
       </div>
       <table className="min-w-full table-fixed divide-y divide-gray-200 border">
         <thead className="bg-gray-100">
@@ -98,8 +129,9 @@ const List = () => {
                       header.column.columnDef.header,
                       header.getContext()
                     )}
-                    {(header.column.columnDef.id !== "clint_type" &&
+                    {(header.column.columnDef.id !== "client_type" &&
                       header.column.columnDef.id !== "status" &&
+                      header.column.columnDef.id !== "action" &&
                       {
                         asc: " 🔼",
                         desc: " 🔽",
@@ -174,5 +206,3 @@ const List = () => {
     </div>
   );
 };
-
-export default List;

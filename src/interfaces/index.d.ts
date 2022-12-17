@@ -1,7 +1,7 @@
 export interface IPost {
   id: number;
-  clint_name: string;
-  clint_type: string;
+  client_name: string;
+  client_type: string;
   status: string;
 }
 

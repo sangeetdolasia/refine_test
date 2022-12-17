@@ -17,154 +17,87 @@ const Users = [
 ];
 
 /* eslint-disable max-lines-per-function, complexity */
+let crud = false;
 const MockAPI = () => {
-  // let LocalDataItem: any = localStorage.getItem('dataItem');
-  // if (!LocalDataItem) {
-  // const dataItem =  [
-  //   {
-  //     id: 1,
-  //     clint_type: "Local",
-  //     clint_name: "Uman",
-  //     status: true,
-  //   },
-  //   {
-  //     id: 2,
-  //     clint_type: "Local",
-  //     clint_name: "Denish",
-  //     status: true,
-  //   },
-  //   {
-  //     id: 3,
-  //     clint_type: "Local",
-  //     clint_name: "Romi",
-  //     status: true,
-  //   },
-  //   {
-  //     id: 4,
-  //     clint_type: "Local",
-  //     clint_name: "Dhaval",
-  //     status: true,
-  //   },
-  //   {
-  //     id: 5,
-  //     clint_type: "Local",
-  //     clint_name: "Raghav",
-  //     status: true,
-  //   },
-  //   {
-  //     id: 6,
-  //     clint_type: "International",
-  //     clint_name: "Sangeet",
-  //     status: true,
-  //   },
-  //   {
-  //     id: 7,
-  //     clint_type: "Local",
-  //     clint_name: "Punit",
-  //     status: true,
-  //   },
-  //   {
-  //     id: 8,
-  //     clint_type: "Local",
-  //     clint_name: "Shayam",
-  //     status: true,
-  //   },
-  //   {
-  //     id: 9,
-  //     clint_type: "Local",
-  //     clint_name: "Sangeet",
-  //     status: true,
-  //   },
-  //   {
-  //     id: 10,
-  //     clint_type: "Local",
-  //     clint_name: "Geet",
-  //     status: true,
-  //   },
-  // ];
-  //   localStorage.setItem('dataItem', JSON.stringify(dataItem));
-  //   LocalDataItem = dataItem;
-  // } else {
-  //   LocalDataItem = JSON.parse(LocalDataItem);
-  // }
-
-  // const dataItem: any = LocalDataItem;
   // This sets the mock adapter on the default instance
 
   let dataList: {
     id: string | number;
-    clint_type: string;
-    clint_name: string;
+    client_type: string;
+    client_name: string;
     status: boolean;
   }[] = [
     {
       id: 1,
-      clint_type: "Local",
-      clint_name: "Uman",
-      status: true,
+      client_type: "Local",
+      client_name: "Uman",
+      status: false,
     },
     {
       id: 2,
-      clint_type: "Local",
-      clint_name: "Denish",
+      client_type: "Local",
+      client_name: "Denish",
       status: true,
     },
     {
       id: 3,
-      clint_type: "Local",
-      clint_name: "Romi",
+      client_type: "Local",
+      client_name: "Romi",
       status: true,
     },
     {
       id: 4,
-      clint_type: "Local",
-      clint_name: "Dhaval",
+      client_type: "Local",
+      client_name: "Dhaval",
       status: true,
     },
     {
       id: 5,
-      clint_type: "Local",
-      clint_name: "Raghav",
+      client_type: "Local",
+      client_name: "Raghav",
       status: true,
     },
     {
       id: 6,
-      clint_type: "International",
-      clint_name: "Sangeet",
+      client_type: "International",
+      client_name: "Sangeet",
       status: true,
     },
     {
       id: 7,
-      clint_type: "Local",
-      clint_name: "Punit",
+      client_type: "Local",
+      client_name: "Punit",
       status: true,
     },
     {
       id: 8,
-      clint_type: "Local",
-      clint_name: "Shayam",
+      client_type: "Local",
+      client_name: "Shayam",
       status: true,
     },
     {
       id: 9,
-      clint_type: "Local",
-      clint_name: "Sangeet",
+      client_type: "Local",
+      client_name: "Sangeet",
       status: true,
     },
     {
       id: 10,
-      clint_type: "Local",
-      clint_name: "Geet",
+      client_type: "Local",
+      client_name: "Geet",
       status: true,
     },
   ];
 
   const mock = new MockAdapter(axios);
   mock.onPost("login").reply((config: any) => {
-    const { user } = JSON.parse(config.data);
+    const { email, password } = JSON.parse(config.data);
+
     const validUser = Users.filter(
-      (usr) => usr.email === user.email && usr.password === user.password
+      (usr) => usr?.email === email && usr?.password === password
     );
+    console.log(validUser, "validUser");
+
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (validUser.length === 1) {
@@ -187,6 +120,8 @@ const MockAPI = () => {
             },
           ]);
         } else {
+          console.log("dfsdfdsfd");
+
           reject(new Error("Please enter the correct username and password."));
         }
       });
@@ -199,27 +134,97 @@ const MockAPI = () => {
     const value = filters.length ? filters[0].value.toLowerCase() : "";
 
     if (offset === 0 && !filters.length) {
-      dataList = dataList;    
+      if (!crud) {
+        dataList = [
+          {
+            id: 1,
+            client_type: "Local",
+            client_name: "Uman",
+            status: false,
+          },
+          {
+            id: 2,
+            client_type: "Local",
+            client_name: "Denish",
+            status: true,
+          },
+          {
+            id: 3,
+            client_type: "Local",
+            client_name: "Romi",
+            status: true,
+          },
+          {
+            id: 4,
+            client_type: "Local",
+            client_name: "Dhaval",
+            status: true,
+          },
+          {
+            id: 5,
+            client_type: "Local",
+            client_name: "Raghav",
+            status: true,
+          },
+          {
+            id: 6,
+            client_type: "International",
+            client_name: "Sangeet",
+            status: true,
+          },
+          {
+            id: 7,
+            client_type: "Local",
+            client_name: "Punit",
+            status: true,
+          },
+          {
+            id: 8,
+            client_type: "Local",
+            client_name: "Shayam",
+            status: true,
+          },
+          {
+            id: 9,
+            client_type: "Local",
+            client_name: "Sangeet",
+            status: true,
+          },
+          {
+            id: 10,
+            client_type: "Local",
+            client_name: "Geet",
+            status: true,
+          },
+        ];
+      } else {
+        dataList = dataList;
+      }
     } else if (offset === 1 && !filters.length) {
-      dataList = [
-        {
-          id: 11,
-          clint_type: "Local",
-          clint_name: "Ram",
-          status: true,
-        },
-        {
-          id: 12,
-          clint_type: "Local",
-          clint_name: "Shyam",
-          status: true,
-        },
-      ];
+      if (!crud) {
+        dataList = [
+          {
+            id: 11,
+            client_type: "Local",
+            client_name: "Ram",
+            status: true,
+          },
+          {
+            id: 12,
+            client_type: "Local",
+            client_name: "Shyam",
+            status: true,
+          },
+        ];
+      } else {
+        dataList = dataList;
+        crud = false;
+      }
     }
 
     if (
       filters.length &&
-      filters[0].field === "clint_name" &&
+      filters[0].field === "client_name" &&
       (value === "s" ||
         value === "sa" ||
         value === "san" ||
@@ -228,165 +233,192 @@ const MockAPI = () => {
         value === "sangee" ||
         value === "sangeet")
     ) {
-      dataList = [
-        {
-          id: 9,
-          clint_type: "Local",
-          clint_name: "Sangeet",
-          status: true,
-        },
-      ];
+      if (!crud) {
+        dataList = [
+          {
+            id: 9,
+            client_type: "Local",
+            client_name: "Sangeet",
+            status: true,
+          },
+        ];
+      } else {
+        dataList = dataList;
+        crud = false;
+      }
     }
 
     if (
       sort.length &&
-      sort[0].field === "clint_name" &&
-      sort[0].order === "asc"
+      sort[0].field === "client_name" &&
+      sort[0].order === "asc" &&
+      offset !== 1
     ) {
-      dataList = [
-        {
-          id: 1,
-          clint_type: "Local",
-          clint_name: "Sangeet",
-          status: true,
-        },
-        {
-          id: 2,
-          clint_type: "Local",
-          clint_name: "Ram",
-          status: true,
-        },
-        {
-          id: 3,
-          clint_type: "Local",
-          clint_name: "Manan",
-          status: true,
-        },
-        {
-          id: 4,
-          clint_type: "Local",
-          clint_name: "Karan",
-          status: true,
-        },
-        {
-          id: 5,
-          clint_type: "Local",
-          clint_name: "Hardik",
-          status: true,
-        },
-        {
-          id: 6,
-          clint_type: "International",
-          clint_name: "Gaurav",
-          status: true,
-        },
-        {
-          id: 7,
-          clint_type: "Local",
-          clint_name: "Dipak",
-          status: true,
-        },
-        {
-          id: 8,
-          clint_type: "Local",
-          clint_name: "Catur",
-          status: true,
-        },
-        {
-          id: 9,
-          clint_type: "Local",
-          clint_name: "Baman",
-          status: true,
-        },
-        {
-          id: 10,
-          clint_type: "Local",
-          clint_name: "Aaman",
-          status: true,
-        },
-      ];
+      if (!crud) {
+        dataList = [
+          {
+            id: 1,
+            client_type: "Local",
+            client_name: "Sangeet",
+            status: true,
+          },
+          {
+            id: 2,
+            client_type: "Local",
+            client_name: "Ram",
+            status: true,
+          },
+          {
+            id: 3,
+            client_type: "Local",
+            client_name: "Manan",
+            status: true,
+          },
+          {
+            id: 4,
+            client_type: "Local",
+            client_name: "Karan",
+            status: true,
+          },
+          {
+            id: 5,
+            client_type: "Local",
+            client_name: "Hardik",
+            status: true,
+          },
+          {
+            id: 6,
+            client_type: "International",
+            client_name: "Gaurav",
+            status: true,
+          },
+          {
+            id: 7,
+            client_type: "Local",
+            client_name: "Dipak",
+            status: true,
+          },
+          {
+            id: 8,
+            client_type: "Local",
+            client_name: "Catur",
+            status: true,
+          },
+          {
+            id: 9,
+            client_type: "Local",
+            client_name: "Baman",
+            status: true,
+          },
+          {
+            id: 10,
+            client_type: "Local",
+            client_name: "Aaman",
+            status: true,
+          },
+        ];
+      } else {
+        dataList = dataList;
+        crud = false;
+      }
     } else if (
       sort.length &&
-      sort[0].field === "clint_name" &&
-      sort[0].order === "desc"
+      sort[0].field === "client_name" &&
+      sort[0].order === "desc" &&
+      offset !== 1
     ) {
-      dataList = [
-        {
-          id: 1,
-          clint_type: "Local",
-          clint_name: "Aaman",
-          status: true,
-        },
-        {
-          id: 2,
-          clint_type: "Local",
-          clint_name: "Baman",
-          status: true,
-        },
-        {
-          id: 3,
-          clint_type: "Local",
-          clint_name: "Catur",
-          status: true,
-        },
-        {
-          id: 4,
-          clint_type: "Local",
-          clint_name: "Dipak",
-          status: true,
-        },
-        {
-          id: 5,
-          clint_type: "International",
-          clint_name: "Gaurav",
-          status: true,
-        },
-        {
-          id: 6,
-          clint_type: "Local",
-          clint_name: "Hardik",
-          status: true,
-        },
-        {
-          id: 7,
-          clint_type: "Local",
-          clint_name: "Karan",
-          status: true,
-        },
-        {
-          id: 8,
-          clint_type: "Local",
-          clint_name: "Manan",
-          status: true,
-        },
-        {
-          id: 9,
-          clint_type: "Local",
-          clint_name: "Ram",
-          status: true,
-        },
-        {
-          id: 10,
-          clint_type: "Local",
-          clint_name: "Sangeet",
-          status: true,
-        },
-      ];
+      if (!crud) {
+        dataList = [
+          {
+            id: 1,
+            client_type: "Local",
+            client_name: "Aaman",
+            status: true,
+          },
+          {
+            id: 2,
+            client_type: "Local",
+            client_name: "Baman",
+            status: true,
+          },
+          {
+            id: 3,
+            client_type: "Local",
+            client_name: "Catur",
+            status: true,
+          },
+          {
+            id: 4,
+            client_type: "Local",
+            client_name: "Dipak",
+            status: true,
+          },
+          {
+            id: 5,
+            client_type: "International",
+            client_name: "Gaurav",
+            status: true,
+          },
+          {
+            id: 6,
+            client_type: "Local",
+            client_name: "Hardik",
+            status: true,
+          },
+          {
+            id: 7,
+            client_type: "Local",
+            client_name: "Karan",
+            status: true,
+          },
+          {
+            id: 8,
+            client_type: "Local",
+            client_name: "Manan",
+            status: true,
+          },
+          {
+            id: 9,
+            client_type: "Local",
+            client_name: "Ram",
+            status: true,
+          },
+          {
+            id: 10,
+            client_type: "Local",
+            client_name: "Sangeet",
+            status: true,
+          },
+        ];
+      } else {
+        dataList = dataList;
+        crud = false;
+      }
     }
 
     if (sort.length && sort[0].field === "id" && sort[0].order === "asc") {
-      dataList.sort();
+      if (!crud) {
+        dataList.sort();
+      } else {
+        dataList = dataList;
+        crud = false;
+      }
     } else if (
       sort.length &&
       sort[0].field === "id" &&
       sort[0].order === "desc"
     ) {
-      dataList.reverse();
+      if (!crud) {
+        dataList.reverse();
+      } else {
+        dataList = dataList;
+        crud = false;
+      }
     }
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (true) {
+        if (resolve) {
           resolve([
             200,
             {
@@ -419,6 +451,7 @@ const MockAPI = () => {
             },
           ]);
         });
+        crud = true;
       } else {
         reject(new Error("Something went wrong please try again!"));
       }
@@ -426,7 +459,6 @@ const MockAPI = () => {
   });
 
   mock.onPatch(new RegExp(`${"lists"}/*`)).reply((config: any) => {
-    console.log("configconfig", config);
     const data = JSON.parse(config.data);
     const id = config.url.split("/")[1];
 
@@ -434,7 +466,6 @@ const MockAPI = () => {
       (obj: any) => parseFloat(obj.id) === parseFloat(id)
     );
     dataList[objIndex] = data;
-    console.log(dataList, "dataList");
 
     return new Promise((resolve, reject) => {
       if (resolve) {
@@ -446,6 +477,59 @@ const MockAPI = () => {
               results: dataList,
             },
           ]);
+          crud = true;
+        });
+      } else {
+        reject(new Error("Something went wrong please try again!"));
+      }
+    });
+  });
+
+  mock.onPost("lists").reply((config: any) => {
+    const data = JSON.parse(config.data);
+
+    const item = { ...data };
+    item.id = dataList.length + 1;
+
+    dataList.push(item);
+
+    return new Promise((resolve, reject) => {
+      if (resolve) {
+        setTimeout(() => {
+          resolve([
+            200,
+            {
+              success: true,
+              results: dataList,
+            },
+          ]);
+          crud = true;
+        });
+      } else {
+        reject(new Error("Something went wrong please try again!"));
+      }
+    });
+  });
+
+  mock.onDelete(new RegExp(`${"lists"}/*`)).reply((config: any) => {
+    const id = config.url.split("/")[1];
+
+    const objIndex: number = dataList.findIndex(
+      (obj: any) => parseFloat(obj.id) === parseFloat(id)
+    );
+    dataList.splice(objIndex, 1);
+
+    return new Promise((resolve, reject) => {
+      if (resolve) {
+        setTimeout(() => {
+          resolve([
+            200,
+            {
+              success: true,
+              results: dataList,
+            },
+          ]);
+          crud = true;
         });
       } else {
         reject(new Error("Something went wrong please try again!"));

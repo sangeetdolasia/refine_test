@@ -16,8 +16,6 @@ export const dataProvider = (axiosIn: any): DataProvider => {
       const { data } = await axios.get(resource, {
         params: { offset: current - 1, limit: pageSize, filters, sort },
       });
-      console.log(data?.result?.data, "data?.result?.data");
-
       return {
         data: data?.result?.data,
         total: data?.result?.total,
@@ -32,26 +30,25 @@ export const dataProvider = (axiosIn: any): DataProvider => {
     update: async ({ resource, id, variables, metaData }) => {
       const { data } = await axios.patch(`${resource}/${id}`, variables);
 
-      // const { data } = metaData?.URLSuffix
-      //   ? await axios.post(url)
-      //   : await axios.put(url, variables);
       return {
         data,
       };
     },
+    create: async ({ resource, variables, metaData }) => {
+      const { data } = await axios.post(`${resource}`, variables);
 
-    // deleteOne: async ({ resource, id, variables, metaData }) => {
-    //   const url = metaData?.URLSuffix
-    //     ? `${API_URL}/${resource}/${id}/${metaData.URLSuffix}`
-    //     : `${API_URL}/${resource}/${id}`;
+      return {
+        data,
+      };
+    },
+    deleteOne: async ({ resource, id, variables, metaData }) => {
+      const { data } = await axios.delete(`${resource}/${id}`, {
+        data: variables,
+      });
 
-    //   const { data } = await axios.delete(url, {
-    //     data: variables,
-    //   });
-
-    //   return {
-    //     data,
-    //   };
-    // },
+      return {
+        data,
+      };
+    },
   };
 };
